@@ -24,7 +24,14 @@ func main() {
 
 	go timingCloseWindows()
 
-	go rt.Run(port)
+	go func() {
+		err := rt.Run(port)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+			return
+		}
+	}()
 
 	c := make(chan os.Signal, 1)
 	// 信号处理

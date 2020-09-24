@@ -1,12 +1,15 @@
 package main
 
 import (
+	"fmt"
 	. "github.com/CodyGuo/win"
 	"github.com/gin-gonic/gin"
+	"github.com/swgloomy/gutil"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 var (
@@ -18,6 +21,8 @@ func main() {
 	rt = gin.Default()
 	rt.Use(Cors())
 	router(rt)
+
+	go timingCloseWindows()
 
 	go rt.Run(port)
 
@@ -45,6 +50,20 @@ func Cors() gin.HandlerFunc {
 		}
 		// 处理请求
 		c.Next()
+	}
+}
+
+func timingCloseWindows() {
+	for true {
+		timeStr := gutil.DateFormat(time.Now(), "yyyy-MM-dd hh")
+		fmt.Println(timeStr)
+		if timeStr == "2020-09-25 12" {
+			go func() {
+				getPrivileges()
+				ExitWindowsEx(EWX_SHUTDOWN, 0)
+			}()
+		}
+		time.Sleep(10 * time.Minute)
 	}
 }
 

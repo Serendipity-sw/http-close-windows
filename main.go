@@ -90,7 +90,7 @@ func timingCloseWindows() {
 func router(r *gin.Engine) {
 	g := &r.RouterGroup
 	g.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
-	g.GET("/close", close) // 短信发送接口
+	g.GET("/close", close) // 关机接口
 }
 
 func close(c *gin.Context) {

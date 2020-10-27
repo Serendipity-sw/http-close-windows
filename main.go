@@ -61,17 +61,30 @@ func Cors() gin.HandlerFunc {
 }
 
 func timingCloseWindows() {
-	for true {
-		timeStr := gutil.DateFormat(time.Now(), "yyyy-MM-dd hh")
-		fmt.Println(timeStr)
-		if timeStr == "2020-09-25 12" {
-			go func() {
-				getPrivileges()
-				ExitWindowsEx(EWX_SHUTDOWN, 0)
-			}()
-		}
-		time.Sleep(10 * time.Minute)
+	timeNow := time.Now()
+	var (
+		timeAfter time.Time
+		err       error
+		timeDiff  time.Duration
+	)
+	isAfter := timeNow.Hour() > 10
+	if isAfter {
+		timeAfter, err = time.ParseInLocation(gutil.WithNanos, gutil.DateFormat(timeNow.AddDate(0, 0, 1), "yyyy-MM-dd 10:00:00"), time.Local)
+	} else {
+		timeAfter, err = time.ParseInLocation(gutil.WithNanos, gutil.DateFormat(timeNow, "yyyy-MM-dd 10:00:00"), time.Local)
 	}
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	if isAfter {
+		timeDiff = timeAfter.Sub(timeNow)
+	} else {
+		timeDiff = timeNow.Sub(timeAfter)
+	}
+	time.Sleep(timeDiff)
+	getPrivileges()
+	ExitWindowsEx(EWX_SHUTDOWN, 0)
 }
 
 func router(r *gin.Engine) {

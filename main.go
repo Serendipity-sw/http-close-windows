@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	port = ":4500" //关机监听端口
-	rt   *gin.Engine
+	port    = ":4500" //关机监听端口
+	rt      *gin.Engine
+	isClose = false
 )
 
 func main() {
@@ -83,6 +84,9 @@ func timingCloseWindows() {
 		timeDiff = timeNow.Sub(timeAfter)
 	}
 	time.Sleep(timeDiff)
+	if isClose {
+		return
+	}
 	getPrivileges()
 	ExitWindowsEx(EWX_SHUTDOWN, 0)
 }
@@ -90,7 +94,8 @@ func timingCloseWindows() {
 func router(r *gin.Engine) {
 	g := &r.RouterGroup
 	g.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
-	g.GET("/close", close) // 关机接口
+	g.GET("/close", close)             // 关机接口
+	g.GET("/cancelClose", cancelClose) // 关机接口
 }
 
 func close(c *gin.Context) {
@@ -98,6 +103,11 @@ func close(c *gin.Context) {
 		getPrivileges()
 		ExitWindowsEx(EWX_SHUTDOWN, 0)
 	}()
+	c.String(http.StatusOK, "ok")
+}
+
+func cancelClose(c *gin.Context) {
+	isClose = true
 	c.String(http.StatusOK, "ok")
 }
 

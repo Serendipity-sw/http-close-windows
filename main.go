@@ -81,7 +81,7 @@ func timingCloseWindows() {
 	if isAfter {
 		timeDiff = timeAfter.Sub(timeNow)
 	} else {
-		timeDiff = timeNow.Sub(timeAfter)
+		timeDiff = timeAfter.Sub(timeNow)
 	}
 	time.Sleep(timeDiff)
 	if isClose {

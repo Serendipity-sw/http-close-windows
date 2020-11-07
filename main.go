@@ -94,11 +94,11 @@ func timingCloseWindows() {
 func router(r *gin.Engine) {
 	g := &r.RouterGroup
 	g.GET("/", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
-	g.GET("/close", close)             // 关机接口
+	g.GET("/close", closeWindow)       // 关机接口
 	g.GET("/cancelClose", cancelClose) // 关机接口
 }
 
-func close(c *gin.Context) {
+func closeWindow(c *gin.Context) {
 	go func() {
 		getPrivileges()
 		ExitWindowsEx(EWX_SHUTDOWN, 0)
